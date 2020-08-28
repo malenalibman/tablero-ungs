@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Tablero de control - Covid-19 - AMBA</title>
+  <!-- Carto -->
+  <script src="https://libs.cartocdn.com/carto-vl/v1.4.4/carto-vl.min.js"></script>
+  <link href="https://carto.com/developers/carto-vl/v1.4.4/examples/maps/style.css" rel="stylesheet">
+  <!-- Airship -->
+  <link rel="stylesheet" href="https://libs.cartocdn.com/airship-style/v2.4.0/airship.css">
+  <script type="module" src="https://libs.cartocdn.com/airship-components/v2.4.0/airship/airship.esm.js"></script>
+  <script nomodule="" src="https://libs.cartocdn.com/airship-components/v2.4.0/airship/airship.js"></script>
+  <!-- Mapbox GL JS -->
+  <script src='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css' rel='stylesheet' />
+  <!-- Include Chart JS -->  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+  <style>
+	.as-sidebar {
+    background-color: white;
+	color: #3E5869;
+	}
+	
+	.as-sidebar--right{
+		width: 15%;
+	}
+	
+	.as-sidebar--left{
+		width: 15%;
+	}
+
+	label {
+    font-size: 12px;
+	color: #adadad;
+	}
+
+    .map-area-text {
+      position: absolute;
+      z-index: 10;
+      top: 24px;
+      left: 8px;
+      padding: 8px;
+      background-color: #FFF;
+    }
+
+	header {
+      align-items: center;
+      color: #FCFCFC;
+      font-size: 1.2em;
+	  height: 15%;
+    }	
+
+    .as-toolbar img {
+      height: 65%;
+	  vertical-align: middle;
+    }  
+ 
+    .as-toolbar {
+      background: #3E5869;
+    }  
+
+	.as-body {
+    font-size: 10px;
+	}
+	
+	.centrado{
+	margin-left: auto;
+	margin-right: auto;
+	}
+	
+	as-widget-header .as-widget-header__header{
+	color: white;
+	font-size: medium;
+	}
+
+	.contadores {
+	color: #3E5869;
+	font-weight: bold; 
+	font-family: wf_standard-font, helvetica, arial, sans-serif; 
+	font-size: 20px;
+	padding: 5px;
+	}
+	
+	.borde {
+    border-bottom: gray 1px solid;
+	padding-bottom: 5px;
+	}
+
+	.contor {
+	padding: 5px;
+	}
+	
+	.as-titulo{
+	color: #FCFCFC;
+	font-weight: bold; 
+	font-family: wf_standard-font, helvetica, arial, sans-serif; 
+	font-size: 10px;
+	}
+	
+  </style>
+</head>
+<body class="as-app-body as-app">
+  <nav role="tablist" class="as-toolbar-tabs as-tabs">
+    <button onclick="showMap(event)" role="tab" class="as-tabs__item as-tabs__item--active">MAPA</button>
+    <button onclick="showLeft(event)" role="tab" class="as-tabs__item">Contador</button>
+    <button onclick="showRight(event)" role="tab" class="as-tabs__item">Selección</button>
+  </nav>
+  <header class="as-toolbar" style="height:10%">
+    <div class="as-toolbar__item" style="height:80%;vertical-align: center;">
+		<img src="./logos/logo-ico-ungs.png" alt="COVID-19 Tablero de control - GenMap" title="COVID-19 Tablero de control"/>
+	</div>
+	<p class="as-toolbar__item" style="font-family: Segoe UI;font-size: 20px;font-weight: bold;">Tablero de control - Covid-19 - AMBA</p>
+
+	<div class="corazon" style="height:100%">
+	 <i class="as-toolbar__item as-icon as-icon-points" style="height:80%;vertical-align: center;">
+		<img class="centrado" src="./logos/logoAreaTIGyAS.jpg" style="height:90%"/>
+	 </i>
+	</div>
+  </header>
+
+  <div class="as-content">
+    <aside class="as-sidebar as-sidebar--right">
+      <div class="as-container">
+        <div class="as-box as-titulo">
+			<div class="borde">
+				<div id="as-total-widget" class="contadores "></div>
+				<label class="contor">Total pacientes</label>
+			</div>
+			<div class="borde ">
+				<div id="as-confirmados-widget" class="contadores"></div>
+				<label class="contor">Confirmados</label>
+			</div>
+			<div class="borde">
+				<div id="as-sospechosos-widget" class="contadores"></div>
+				<label class="contor">Sospechosos</label>
+			</div>
+			<div class="borde">
+				<div id="as-confmascu-widget" class="contadores"></div>
+				<label class="contor">Confirmados Masculinos</label>
+			</div>
+			<div class="borde">
+				<div id="as-conffeme-widget" class="contadores"></div>
+				<label class="contor">Confirmadas Femeninas</label>
+			</div>
+			<div class="borde">
+				<div id="as-fallemascu-widget" class="contadores"></div>
+				<label class="contor">Fallecidos Masculinos</label>
+			</div>
+			<div class="borde">
+				<div id="as-fallefeme-widget" class="contadores"></div>
+				<label class="contor">Fallecidas Femeninas</label>
+			</div>
+			<div class="borde">
+				<div id="as-intermascu-widget" class="contadores"></div>
+				<label class="contor">Internados Masculinos</label>
+			</div>
+			<div class="borde">
+				<div id="as-interfeme-widget" class="contadores"></div>
+				<label class="contor">Internadas Femeninas</label>
+			</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="as-main">
+      <div class="as-map-area">
+        <div id="map"></div>
+      </div>
+<!--      <footer class="as-map-footer as-bg--complementary" style="height: 100px;">
+        <div class="as-box as-title as-color--type-04">
+          MAP FOOTER
+        </div>
+      </footer> -->
+    </main>
+  </div>
+  <script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmVzanVhcmV6IiwiYSI6ImNrYXlhbzQyODBlcXAzMG85dWwzbDFtemUifQ.9Y3nkCqP3RZFotMx2w3llg';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-58.458904, -34.60568],
+        zoom: 7.4
+    });
+	
+    const nav = new mapboxgl.NavigationControl();
+    map.addControl(nav, 'top-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
+
+        //** CARTO VL functionality begins here **//
+
+        const popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+        });
+		
+			//Partidos y CABA como puntos
+			fetch('./capas/covid19_amba_points.geojson')
+			.then(response => response.json())
+			.then(function(data){
+				// Define layer
+				const sourceLimites = new carto.source.GeoJSON(data);
+				const points = new carto.Viz(`
+					//color: ramp($total(#fbe6c5, #f2a28a, #dc7176, #b24b65, #70284a), quantiles)
+					width: ramp(globalQuantiles($confirmado, 5), [10,20])
+					color: ramp(globalQuantiles($confirmado, 5), [#f3e0f7, #dbbaed, #b998dd, #9178c4, #63589f])
+					strokeColor: rgba(17, 141, 255, 0.7)
+					//strokeWidth: ramp(zoomrange([9,18]),[3,10])
+					@v_features: viewportFeatures($residencia)
+					@partido: $residencia
+					@total: $total
+					@SumTotal: globalSum($total)
+					@SumConfir: globalSum($confirmado)
+					@SumSospe: globalSum($sospechoso)
+					@SumConfMas: globalSum($cmasculino)
+					@SumConfFem: globalSum($cfemenino)
+					@SumFalMas: globalSum($fmasculino)
+					@SumFalFem: globalSum($ffemenino)
+					@SumIntMas: globalSum($imasculino)
+					@SumIntFem: globalSum($ifemenino)
+				`);
+				this.layPoint = new carto.Layer('layPoint', sourceLimites, points);
+				layPoint.addTo(map);
+				
+				layPoint.on('loaded', () => {
+					// Update widgets
+					document.getElementById('as-total-widget').innerText = `${points.variables.SumTotal.value}`;
+					document.getElementById('as-confirmados-widget').innerText = `${points.variables.SumConfir.value}`;
+					document.getElementById('as-sospechosos-widget').innerText = `${points.variables.SumSospe.value}`;
+					document.getElementById('as-confmascu-widget').innerText = `${points.variables.SumConfMas.value}`;
+					document.getElementById('as-conffeme-widget').innerText = `${points.variables.SumConfFem.value}`;
+					document.getElementById('as-fallemascu-widget').innerText = `${points.variables.SumFalMas.value}`;
+					document.getElementById('as-fallefeme-widget').innerText = `${points.variables.SumFalFem.value}`;
+					document.getElementById('as-intermascu-widget').innerText = `${points.variables.SumIntMas.value}`;
+					document.getElementById('as-interfeme-widget').innerText = `${points.variables.SumIntFem.value}`;
+				});
+
+        // Define interactivity
+        const interactivity = new carto.Interactivity(layPoint);
+        const delay = 10;
+        let clickedFeatureId = null;
+
+        interactivity.on('featureEnter', event => {
+            event.features.forEach(feature => {
+                if (feature.id !== clickedFeatureId) {
+                    feature.color.blendTo('opacity(DeepPink, 0.5)', delay)
+                    feature.strokeWidth.blendTo('4', delay);
+                    feature.strokeColor.blendTo('opacity(DeepPink, 0.8)', delay);
+                }
+            });
+        });
+
+        interactivity.on('featureLeave', event => {
+            event.features.forEach(feature => {
+                if (feature.id !== clickedFeatureId) {
+                    feature.color.reset(delay);
+                    feature.strokeWidth.reset(delay);
+                    feature.strokeColor.reset(delay);
+                }
+            });
+        });
+		
+		//PopUp
+        interactivity.on('featureHover', updatePopup);
+
+        function updatePopup(event) {
+            if (event.features.length > 0) {
+                const vars = event.features[0].variables;
+                popup.setHTML(`
+                    <div>
+                        <h3 class ="h3">${vars.partido.value}</h3>
+                        <p class="description open-sans">Total casos: ${vars.total.value}</h3>
+                    </div>
+                `);
+                popup.setLngLat([event.coordinates.lng, event.coordinates.lat]);
+                if (!popup.isOpen()) {
+                    popup.addTo(map);
+                }
+            } else {
+                popup.remove();
+            }
+        }
+
+ });
+ 
+ 			// Límites de Partidos y CABA
+			fetch('./capas/amba_partidos_caba_poli.geojson')
+			.then(response => response.json())
+			.then(function(data){
+				const sourceLimites = new carto.source.GeoJSON(data);
+				const limites = new carto.Viz(`
+					width: ramp(zoomrange([12,18]),[3,40])
+					color: rgba(0,0,0,0.0)
+					strokeColor: rgba(17, 141, 255, 0.7)
+					strokeWidth: ramp(zoomrange([9,18]),[3,10])
+					@v_features: viewportFeatures($nam)
+					@partido: $nam
+				`);
+				const layLimites = new carto.Layer('layLimites', sourceLimites, limites);
+				layLimites.addTo(map);
+				
+				// Create labeling layer centroids
+				layLimites.on('loaded', () => {
+					map.addSource('labels', { type: 'geojson', data: null });
+					const labelSource = map.getSource('labels');
+
+						const limitesUpdated = function () {
+						const features = limites.variables.v_features.value;
+						const geojsonFeatures = features.map(feature => {
+							return {
+								"type": "Feature",
+								"geometry": {
+								"type": "Point",
+								"coordinates": feature.getRenderedCentroid()
+								},
+								"properties": {
+									"label_field": `${feature.properties['nam']}`,
+								}
+							}
+						});
+
+							labelSource.setData({
+								type: 'FeatureCollection',
+								features: geojsonFeatures
+							});
+						};
+
+				layLimites.on('updated', limitesUpdated);
+
+				// Style labels
+				map.addLayer({
+					"id": "my-labels",
+					"type": "symbol",
+					"source": "labels",
+					"layout": {
+						"text-field": "{label_field}",
+						"text-size": 10,
+						"text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+						"text-letter-spacing": 0.1,
+						"text-max-width": 7,
+						"text-transform": "uppercase"
+					},
+					"paint": {
+						"text-color": "#333",
+						"text-halo-color": "#fff",
+						"text-halo-width": 1,
+						"text-halo-blur": 0.5
+					},
+					'minzoom': 8
+				});
+				});
+
+			});
+			
+ 			//Barrios populares
+			fetch('./capas/barrios_popu_rmba.geojson')
+			.then(response => response.json())
+			.then(function(data){
+				const sourceBarrios = new carto.source.GeoJSON(data);
+				const barrios = new carto.Viz(`
+					color: ramp(buckets($tipo, ["Asentamiento Precario", "Villa", "Otro"]), [#a35fe7, #c82828, #8be136])
+					strokeColor: rgba(150,150,150,0.8)
+					strokeWidth: 0.5
+				`);
+				const barriospop = new carto.Layer('barriospop', sourceBarrios, barrios);
+				barriospop.addTo(map);
+			});
+			
+ 			//Hacinamiento crítico
+			fetch('./capas/haci_critic_amba.geojson')
+			.then(response => response.json())
+			.then(function(data){
+				const sourceHacin = new carto.source.GeoJSON(data);
+				const hacina = new carto.Viz(`
+					color: opacity(ramp(globalQuantiles($haci, 5), [#fef6b5, #ffd08e, #ffa679, #f67b77, #e15383]), 0.5)
+					strokeColor: rgba(150,150,150,0.5)
+					strokeWidth: 0.1
+				`);
+				const HacinaCrit = new carto.Layer('HacinaCrit', sourceHacin, hacina);
+				HacinaCrit.addTo(map, 'layPoint');
+			});
+  </script>
+</body>
+</html>
