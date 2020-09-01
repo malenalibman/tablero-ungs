@@ -204,14 +204,20 @@
 				// Define layer
 				const sourceLimites = new carto.source.GeoJSON(data);
 				const points = new carto.Viz(`
-					//color: ramp($total(#fbe6c5, #f2a28a, #dc7176, #b24b65, #70284a), quantiles)
 					width: ramp(globalQuantiles($confirmado, 5), [10,20])
 					color: ramp(globalQuantiles($confirmado, 5), [#f3e0f7, #dbbaed, #b998dd, #9178c4, #63589f])
 					strokeColor: rgba(17, 141, 255, 0.7)
-					//strokeWidth: ramp(zoomrange([9,18]),[3,10])
 					@v_features: viewportFeatures($residencia)
 					@partido: $residencia
 					@total: $total
+					@confirma: $confirmado
+					@sospecho: $sospechoso
+					@confmasc: $cmasculino
+					@conffemeni: $cfemenino
+					@fallmasc: $fmasculino
+					@fallfeme: $ffemenino
+					@intermascu: $imasculino
+					@interfeme: $ifemenino
 					@SumTotal: globalSum($total)
 					@SumConfir: globalSum($confirmado)
 					@SumSospe: globalSum($sospechoso)
@@ -272,7 +278,15 @@
                 popup.setHTML(`
                     <div>
                         <h3 class ="h3">${vars.partido.value}</h3>
-                        <p class="description open-sans">Total casos: ${vars.total.value}</h3>
+                        <p class="description open-sans">Total casos: ${vars.total.value}</p>
+						<p class="description open-sans">Confirmados: ${vars.confirma.value}</p>
+						<p class="description open-sans">Sospechosos: ${vars.sospecho.value}</p>
+						<p class="description open-sans">Confirmados: ${vars.confmasc.value}</p>
+						<p class="description open-sans">Confirmadas: ${vars.conffemeni.value}</p>
+						<p class="description open-sans">Fallecidos: ${vars.fallmasc.value}</p>
+						<p class="description open-sans">Fallecidas: ${vars.fallfeme.value}</p>
+						<p class="description open-sans">Internados: ${vars.intermascu.value}</p>
+						<p class="description open-sans">Internadas: ${vars.interfeme.value}</p>
                     </div>
                 `);
                 popup.setLngLat([event.coordinates.lng, event.coordinates.lat]);
