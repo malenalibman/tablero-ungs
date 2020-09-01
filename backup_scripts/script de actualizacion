@@ -1,0 +1,9 @@
+mkdocs gh-deploy
+git add . 
+git commit -am "correccion descarga"
+git push
+
+
+mkdocs serve
+mkdocs serve -a localhost:4444
+
