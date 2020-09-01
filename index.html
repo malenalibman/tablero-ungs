@@ -62,7 +62,10 @@
     .as-toolbar {
       background: #3E5869;
     }  
-
+	.as-toolbar__item {
+    min-height: 30px;
+	}
+	
 	.as-body {
     font-size: 10px;
 	}
@@ -113,8 +116,14 @@
     <div class="as-toolbar__item" style="height:80%;vertical-align: center;">
 		<img src="./logos/logo-ico-ungs.png" alt="COVID-19 Tablero de control - GenMap" title="COVID-19 Tablero de control"/>
 	</div>
-	<p class="as-toolbar__item" style="font-family: Segoe UI;font-size: 20px;font-weight: bold;">Tablero de control - Covid-19 - AMBA</p>
-
+	<div>
+	  <div class="as-toolbar__group">
+		<p class="as-toolbar__item" style="font-family: Segoe UI SANS-SERIF;font-size: 20px;font-weight: bold;">Tablero de control - Covid-19 - AMBA</p>
+	  </div>
+	  <div class="as-toolbar__group">
+		<p class="as-toolbar__item" style="font-family: Segoe UI SANS-SERIF;font-size: 20px;font-weight: bold;">40 Partidos del Area Metropolitana Bonaerense + CABA</p>
+	  </div>
+	</div>
 	<div class="corazon" style="height:100%">
 	 <i class="as-toolbar__item as-icon as-icon-points" style="height:80%;vertical-align: center;">
 		<img class="centrado" src="./logos/logoAreaTIGyAS.jpg" style="height:90%"/>
@@ -123,6 +132,22 @@
   </header>
 
   <div class="as-content">
+    <aside class="as-sidebar as-sidebar--left">
+	<!-- Add title/legend box -->
+
+    <div class="box">
+        <header>
+            <h2>Hacinamiento crítico</h2>
+        </header>
+        <!-- Add legend data -->
+        <section>
+            <div id="controls">
+                <ul id="content"></ul>
+            </div>
+        </section>
+    </div>
+
+	</aside>
     <aside class="as-sidebar as-sidebar--right">
       <div class="as-container">
         <div class="as-box as-titulo">
@@ -134,10 +159,10 @@
 				<div id="as-confirmados-widget" class="contadores"></div>
 				<label class="contor">Confirmados</label>
 			</div>
-			<div class="borde">
+	<!--			<div class="borde">
 				<div id="as-sospechosos-widget" class="contadores"></div>
 				<label class="contor">Sospechosos</label>
-			</div>
+			</div> -->
 			<div class="borde">
 				<div id="as-confmascu-widget" class="contadores"></div>
 				<label class="contor">Confirmados Masculinos</label>
@@ -210,8 +235,8 @@
 					@v_features: viewportFeatures($residencia)
 					@partido: $residencia
 					@total: $total
-					@confirma: $confirmado
-					@sospecho: $sospechoso
+					@confirma: $confirmados
+					@sospecho: $sospechosos
 					@confmasc: $cmasculino
 					@conffemeni: $cfemenino
 					@fallmasc: $fmasculino
@@ -220,7 +245,7 @@
 					@interfeme: $ifemenino
 					@SumTotal: globalSum($total)
 					@SumConfir: globalSum($confirmado)
-					@SumSospe: globalSum($sospechoso)
+					//@SumSospe: globalSum($sospechoso)
 					@SumConfMas: globalSum($cmasculino)
 					@SumConfFem: globalSum($cfemenino)
 					@SumFalMas: globalSum($fmasculino)
@@ -235,7 +260,7 @@
 					// Update widgets
 					document.getElementById('as-total-widget').innerText = `${points.variables.SumTotal.value}`;
 					document.getElementById('as-confirmados-widget').innerText = `${points.variables.SumConfir.value}`;
-					document.getElementById('as-sospechosos-widget').innerText = `${points.variables.SumSospe.value}`;
+					//document.getElementById('as-sospechosos-widget').innerText = `${points.variables.SumSospe.value}`;
 					document.getElementById('as-confmascu-widget').innerText = `${points.variables.SumConfMas.value}`;
 					document.getElementById('as-conffeme-widget').innerText = `${points.variables.SumConfFem.value}`;
 					document.getElementById('as-fallemascu-widget').innerText = `${points.variables.SumFalMas.value}`;
@@ -280,7 +305,7 @@
                         <h3 class ="h3">${vars.partido.value}</h3>
                         <p class="description open-sans">Total casos: ${vars.total.value}</p>
 						<p class="description open-sans">Confirmados: ${vars.confirma.value}</p>
-						<p class="description open-sans">Sospechosos: ${vars.sospecho.value}</p>
+					<!--	<p class="description open-sans">Sospechosos: ${vars.sospecho.value}</p> -->
 						<p class="description open-sans">Confirmados: ${vars.confmasc.value}</p>
 						<p class="description open-sans">Confirmadas: ${vars.conffemeni.value}</p>
 						<p class="description open-sans">Fallecidos: ${vars.fallmasc.value}</p>
@@ -390,11 +415,44 @@
 				const sourceHacin = new carto.source.GeoJSON(data);
 				const hacina = new carto.Viz(`
 					color: opacity(ramp(globalQuantiles($haci, 5), [#fef6b5, #ffd08e, #ffa679, #f67b77, #e15383]), 0.5)
+					//color: ramp(globalquantiles($haci,5),purp)
 					strokeColor: rgba(150,150,150,0.5)
 					strokeWidth: 0.1
 				`);
-				const HacinaCrit = new carto.Layer('HacinaCrit', sourceHacin, hacina);
+				HacinaCrit = new carto.Layer('HacinaCrit', sourceHacin, hacina);
 				HacinaCrit.addTo(map, 'layPoint');
+
+    HacinaCrit.on('loaded', () => {
+
+      const colorLegend = HacinaCrit.hacina.color.getLegendData({
+        othersLabel: 'Default',
+        samples: 20
+      });
+
+      let colorLegendList = '';
+
+      colorLegend.data.forEach((legend) => {
+        const colorHex = rgbToHex(legend.value);
+        const keyMin = legend.key[0].toFixed(2);
+        const keyMax = legend.key[1].toFixed(2);
+        let bucket = `${keyMin} - ${keyMax}`;
+        if (keyMin==='-Infinity'){
+          bucket = `<${keyMax}`;
+        }else if (keyMax==='Infinity'){
+          bucket = `>${keyMin}`;
+        }
+
+      colorLegendList +=
+          `<li><span class="polygon-mark" style="background-color:${colorHex};"></span> <span>${bucket}</span></li>\n`;
+      });
+
+      document.getElementById('content').innerHTML = colorLegendList;
+   });
+
+    function rgbToHex(color) {
+      return "#" + ((1 << 24) + (color.r << 16) + (color.g << 8) + color.b).toString(16).slice(1);
+    }
+
 			});
   </script>
 </body>
