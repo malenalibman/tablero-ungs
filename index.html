@@ -206,8 +206,9 @@
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [-58.458904, -34.60568],
         zoom: 7.4
+		
     });
-	
+	map.setMinZoom(7.4);
     const nav = new mapboxgl.NavigationControl();
     map.addControl(nav, 'top-left');
     map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
