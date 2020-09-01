@@ -229,8 +229,8 @@
 				// Define layer
 				const sourceLimites = new carto.source.GeoJSON(data);
 				const points = new carto.Viz(`
-					width: ramp(globalQuantiles($confirmado, 5), [10,20])
-					color: ramp(globalQuantiles($confirmado, 5), [#f3e0f7, #dbbaed, #b998dd, #9178c4, #63589f])
+					width: ramp(globalQuantiles($confirmados, 5), [10,20])
+					color: ramp(globalQuantiles($confirmados, 5), [#f3e0f7, #dbbaed, #b998dd, #9178c4, #63589f])
 					strokeColor: rgba(17, 141, 255, 0.7)
 					@v_features: viewportFeatures($residencia)
 					@partido: $residencia
@@ -244,7 +244,7 @@
 					@intermascu: $imasculino
 					@interfeme: $ifemenino
 					@SumTotal: globalSum($total)
-					@SumConfir: globalSum($confirmado)
+					@SumConfir: globalSum($confirmados)
 					//@SumSospe: globalSum($sospechoso)
 					@SumConfMas: globalSum($cmasculino)
 					@SumConfFem: globalSum($cfemenino)
