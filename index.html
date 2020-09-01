@@ -232,8 +232,8 @@
 					width: ramp(globalQuantiles($confirmados, 5), [10,20])
 					color: ramp(globalQuantiles($confirmados, 5), [#f3e0f7, #dbbaed, #b998dd, #9178c4, #63589f])
 					strokeColor: rgba(17, 141, 255, 0.7)
-					@v_features: viewportFeatures($residencia)
-					@partido: $residencia
+					@v_features: viewportFeatures($residencia_departamento_nombre)
+					@partido: $residencia_departamento_nombre
 					@total: $total
 					@confirma: $confirmados
 					@sospecho: $sospechosos
