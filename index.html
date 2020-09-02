@@ -377,21 +377,17 @@
 
         interactivity.on('featureEnter', event => {
             event.features.forEach(feature => {
-                if (feature.id !== clickedFeatureId) {
-                    feature.color.blendTo('opacity(DeepPink, 0.5)', delay)
-                    feature.strokeWidth.blendTo('4', delay);
-                    feature.strokeColor.blendTo('opacity(DeepPink, 0.8)', delay);
-                }
+                feature.color.blendTo('opacity(DeepPink, 0.5)', delay);
+                feature.width.blendTo(20, 100);
             });
         });
 
         interactivity.on('featureLeave', event => {
             event.features.forEach(feature => {
-                if (feature.id !== clickedFeatureId) {
                     feature.color.reset(delay);
                     feature.strokeWidth.reset(delay);
                     feature.strokeColor.reset(delay);
-                }
+               
             });
         });
 		
