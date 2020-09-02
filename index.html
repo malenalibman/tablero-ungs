@@ -26,18 +26,28 @@
 	}
 	
 	.as-sidebar--right{
-		width: 15%;
+		width: 20%;
+	}
+	
+	.as-container{
+		width: 100%;
+		position: relative;
 	}
 	
 	.as-sidebar--left{
 		width: 20%;
 	}
-
+	
 	label {
     font-size: 12px;
 	color: #adadad;
 	}
 
+	.box{
+    margin-bottom: 5px;
+	}
+	
+	
     .map-area-text {
       position: absolute;
       z-index: 10;
@@ -102,6 +112,8 @@
 	font-weight: bold; 
 	font-family: wf_standard-font, helvetica, arial, sans-serif; 
 	font-size: 10px;
+	width: 50%;
+	position: relative;
 	}
 	
   </style>
@@ -141,57 +153,97 @@
                 <ul id="content"></ul>
             </div>
         </section>
+		<footer class="js-footer">
+			<label class="contor">% de población por radio censal</label>
+		</footer>
     </div>
     <div class="box">
         <header>
-            <h2>Grandes grupos etarios</h2>
+            <h2>Edad promedio</h2>
         </header>
+        <section>
           <as-histogram-widget />
-        <footer class="js-footer"></footer>
+        </section>
+        <footer class="js-footer">
+			<label class="contor">Promedios por partido</label>
+		</footer>
     </div>
 	</aside>
 
 
     <aside class="as-sidebar as-sidebar--right">
       <div class="as-container">
-        <div class="as-box as-titulo">
+        <div class="as-box as-titulo" style="float: left;">
 			<div class="borde ">
 				<div id="as-confirmados-widget" class="contadores"></div>
 				<label class="contor">Confirmados</label>
 			</div>
-	<!--	
-			<div class="borde">
-				<div id="as-total-widget" class="contadores "></div>
-				<label class="contor">Total pacientes</label>
-			</div>
-			<div class="borde">
-				<div id="as-sospechosos-widget" class="contadores"></div>
-				<label class="contor">Sospechosos</label>
-			</div> 
-			-->
 			<div class="borde">
 				<div id="as-confmascu-widget" class="contadores"></div>
-				<label class="contor">Confirmados Masculinos</label>
+				<label class="contor">Masculinos</label>
 			</div>
 			<div class="borde">
 				<div id="as-conffeme-widget" class="contadores"></div>
-				<label class="contor">Confirmadas Femeninas</label>
+				<label class="contor">Femeninas</label>
 			</div>
 			<div class="borde">
 				<div id="as-fallemascu-widget" class="contadores"></div>
-				<label class="contor">Fallecidos Masculinos</label>
+				<label class="contor">Fallecidos</label>
 			</div>
 			<div class="borde">
 				<div id="as-fallefeme-widget" class="contadores"></div>
-				<label class="contor">Fallecidas Femeninas</label>
+				<label class="contor">Fallecidas</label>
 			</div>
 			<div class="borde">
 				<div id="as-intermascu-widget" class="contadores"></div>
-				<label class="contor">Internados Masculinos</label>
+				<label class="contor">Internados</label>
 			</div>
 			<div class="borde">
 				<div id="as-interfeme-widget" class="contadores"></div>
-				<label class="contor">Internadas Femeninas</label>
+				<label class="contor">Internadas</label>
+			</div>
+        </div>
+
+        <div class="as-box as-titulo" style="float: right;">
+			<div class="borde ">
+				<div id="as-e0a9-widget" class="contadores"></div>
+				<label class="contor">Hasta 9 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e10a19-widget" class="contadores"></div>
+				<label class="contor">10 a 19 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e20a29-widget" class="contadores"></div>
+				<label class="contor">20 a 29 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e30a39-widget" class="contadores"></div>
+				<label class="contor">30 a 39 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e40a49-widget" class="contadores"></div>
+				<label class="contor">40 a 49 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e50a59-widget" class="contadores"></div>
+				<label class="contor">50 a 59 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e60a69-widget" class="contadores"></div>
+				<label class="contor">60 a 69 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e70a79-widget" class="contadores"></div>
+				<label class="contor">70 a 79 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e80a89-widget" class="contadores"></div>
+				<label class="contor">80 a 89 años</label>
+			</div>
+			<div class="borde">
+				<div id="as-e90-widget" class="contadores"></div>
+				<label class="contor">Mas de 90 años</label>
 			</div>
         </div>
       </div>
@@ -246,7 +298,7 @@
 					strokeColor: rgba(17, 141, 255, 0.7)
 					@v_features: viewportFeatures($residencia_departamento_nombre)
 					@partido: $residencia_departamento_nombre
-					@histogram: viewportHistogram($edad_prom, 5)
+					@histogram: viewportHistogram($edad_prom, 10)
 					//@total: $total
 					@confirma: $confirmados
 					@sospecho: $sospechosos
@@ -267,6 +319,16 @@
 					@SumIntFem: globalSum($ifemenino)
 					@fallePopUp: $fmasculino + $ffemenino
 					@interPopUp: $imasculino + $ifemenino
+					@Sume9: globalSum($e0a9)
+					@Sume10a19: globalSum($e10a19)
+					@Sum20a29: globalSum($e20a29)
+					@Sum30a39: globalSum($e30a39)
+					@Sum40a49: globalSum($e40a49)
+					@Sum50a59: globalSum($e50a59)
+					@Sum60a69: globalSum($e60a69)
+					@Sum70a79: globalSum($e70a79)
+					@Sum80a89: globalSum($e80a99)
+					@Sum90a: globalSum($e90)
 				`);
 				this.layPoint = new carto.Layer('layPoint', sourceLimites, points);
 				layPoint.addTo(map);
@@ -282,6 +344,16 @@
 					document.getElementById('as-fallefeme-widget').innerText = `${points.variables.SumFalFem.value}`;
 					document.getElementById('as-intermascu-widget').innerText = `${points.variables.SumIntMas.value}`;
 					document.getElementById('as-interfeme-widget').innerText = `${points.variables.SumIntFem.value}`;
+					document.getElementById('as-e0a9-widget').innerText = `${points.variables.Sume9.value}`;
+					document.getElementById('as-e10a19-widget').innerText = `${points.variables.Sume10a19.value}`;
+					document.getElementById('as-e20a29-widget').innerText = `${points.variables.Sum20a29.value}`;
+					document.getElementById('as-e30a39-widget').innerText = `${points.variables.Sum30a39.value}`;
+					document.getElementById('as-e40a49-widget').innerText = `${points.variables.Sum40a49.value}`;
+					document.getElementById('as-e50a59-widget').innerText = `${points.variables.Sum50a59.value}`;
+					document.getElementById('as-e60a69-widget').innerText = `${points.variables.Sum60a69.value}`;
+					document.getElementById('as-e70a79-widget').innerText = `${points.variables.Sum70a79.value}`;
+					document.getElementById('as-e80a89-widget').innerText = `${points.variables.Sum80a89.value}`;
+					document.getElementById('as-e90-widget').innerText = `${points.variables.Sum90a.value}`;
 				});
 
 			layPoint.on('loaded', drawHistogram);
@@ -458,7 +530,7 @@
                 // Style for legend items based on geometry type
                 colorLegendList +=
                     `<li>
-                       <span class="point-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
+                       <span class="polygon-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
                        <span>${legend.key}</span>
                     </li>\n`;
             });
