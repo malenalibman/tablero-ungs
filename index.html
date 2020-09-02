@@ -30,7 +30,7 @@
 	}
 	
 	.as-sidebar--left{
-		width: 15%;
+		width: 20%;
 	}
 
 	label {
@@ -142,7 +142,16 @@
             </div>
         </section>
     </div>
+    <div class="box">
+        <header>
+            <h2>Grandes grupos etarios</h2>
+        </header>
+          <as-histogram-widget />
+        <footer class="js-footer"></footer>
+    </div>
 	</aside>
+
+
     <aside class="as-sidebar as-sidebar--right">
       <div class="as-container">
         <div class="as-box as-titulo">
@@ -201,12 +210,17 @@
   </div>
   <script>
 	mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmVzanVhcmV6IiwiYSI6ImNrYXlhbzQyODBlcXAzMG85dWwzbDFtemUifQ.9Y3nkCqP3RZFotMx2w3llg';
-    var map = new mapboxgl.Map({
+    
+	var bounds = [
+			[-60.15752210143681111, -35.46181267772495715], // Southwest coordinates
+			[-56.92881040156306938, -33.76602047927494965] // Northeast coordinates
+		];
+	var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [-58.458904, -34.60568],
-        zoom: 7.4
-		
+        zoom: 7.4,
+		maxBounds: bounds 
     });
 	map.setMinZoom(7.4);
     const nav = new mapboxgl.NavigationControl();
@@ -214,7 +228,7 @@
     map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
 
         //** CARTO VL functionality begins here **//
-
+		const s = carto.expressions;
         const popup = new mapboxgl.Popup({
             closeButton: false,
             closeOnClick: false
@@ -232,6 +246,7 @@
 					strokeColor: rgba(17, 141, 255, 0.7)
 					@v_features: viewportFeatures($residencia_departamento_nombre)
 					@partido: $residencia_departamento_nombre
+					@histogram: viewportHistogram($edad_prom, 5)
 					//@total: $total
 					@confirma: $confirmados
 					@sospecho: $sospechosos
@@ -256,7 +271,7 @@
 				this.layPoint = new carto.Layer('layPoint', sourceLimites, points);
 				layPoint.addTo(map);
 				
-				layPoint.on('loaded', () => {
+				layPoint.on('loaded',  () => {
 					// Update widgets
 					//document.getElementById('as-total-widget').innerText = `${points.variables.SumTotal.value}`;
 					document.getElementById('as-confirmados-widget').innerText = `${points.variables.SumConfir.value}`;
@@ -268,6 +283,20 @@
 					document.getElementById('as-intermascu-widget').innerText = `${points.variables.SumIntMas.value}`;
 					document.getElementById('as-interfeme-widget').innerText = `${points.variables.SumIntFem.value}`;
 				});
+
+			layPoint.on('loaded', drawHistogram);
+			
+			function drawHistogram() {
+				var histogramWidget = document.querySelector('as-histogram-widget');
+				const histogram = layPoint.viz.variables.histogram.value;
+				histogramWidget.data = histogram.map(entry => {
+					return {
+						start: entry.x[0],
+						end: entry.x[1],
+						value: entry.y
+					}
+				});
+			}
 
         // Define interactivity
         const interactivity = new carto.Interactivity(layPoint);
@@ -406,47 +435,37 @@
 			fetch('./capas/haci_critic_amba.geojson')
 			.then(response => response.json())
 			.then(function(data){
+				
 				const sourceHacin = new carto.source.GeoJSON(data);
 				const hacina = new carto.Viz(`
 					color: opacity(ramp(globalQuantiles($haci, 5), [#fef6b5, #ffd08e, #ffa679, #f67b77, #e15383]), 0.5)
-					//color: ramp(globalquantiles($haci,5),purp)
 					strokeColor: rgba(150,150,150,0.5)
 					strokeWidth: 0.1
 				`);
-				HacinaCrit = new carto.Layer('HacinaCrit', sourceHacin, hacina);
+				this.HacinaCrit = new carto.Layer('HacinaCrit', sourceHacin, hacina);
 				HacinaCrit.addTo(map, 'layPoint');
+				
+			HacinaCrit.on('loaded', () => {
 
-    HacinaCrit.on('loaded', () => {
+            // Request data for legend from the layer viz color
+            const colorLegend = HacinaCrit.viz.color.getLegendData();
+            let colorLegendList = '';
+            // Create list elements for legend
+            colorLegend.data.forEach((legend, index) => {
+                const color = legend.value;
+                const rgba = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
 
-      const colorLegend = HacinaCrit.hacina.color.getLegendData({
-        othersLabel: 'Default',
-        samples: 20
-      });
-
-      let colorLegendList = '';
-
-      colorLegend.data.forEach((legend) => {
-        const colorHex = rgbToHex(legend.value);
-        const keyMin = legend.key[0].toFixed(2);
-        const keyMax = legend.key[1].toFixed(2);
-        let bucket = `${keyMin} - ${keyMax}`;
-        if (keyMin==='-Infinity'){
-          bucket = `<${keyMax}`;
-        }else if (keyMax==='Infinity'){
-          bucket = `>${keyMin}`;
-        }
-
-      colorLegendList +=
-          `<li><span class="polygon-mark" style="background-color:${colorHex};"></span> <span>${bucket}</span></li>\n`;
-      });
-
-      document.getElementById('content').innerHTML = colorLegendList;
-   });
-
-    function rgbToHex(color) {
-      return "#" + ((1 << 24) + (color.r << 16) + (color.g << 8) + color.b).toString(16).slice(1);
-    }
-
+                // Style for legend items based on geometry type
+                colorLegendList +=
+                    `<li>
+                       <span class="point-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
+                       <span>${legend.key}</span>
+                    </li>\n`;
+            });
+            // Place list items in the content section of the title/legend box
+            document.getElementById('content').innerHTML = colorLegendList;
+        });
+		
 			});
   </script>
 </body>
