@@ -159,6 +159,20 @@
     </div>
     <div class="box">
         <header>
+            <h2>Barrios Populares</h2>
+        </header>
+        <!-- Add legend data -->
+        <section>
+            <div id="controls">
+                <ul id="barriospop"></ul>
+            </div>
+        </section>
+		<footer class="js-footer">
+			<label class="contor">Tipo de barrio</label>
+		</footer>
+    </div>
+	<div class="box">
+        <header>
             <h2>Edad promedio</h2>
         </header>
         <section>
@@ -206,44 +220,20 @@
 
         <div class="as-box as-titulo" style="float: right;">
 			<div class="borde ">
-				<div id="as-e0a9-widget" class="contadores"></div>
-				<label class="contor">Hasta 9 años</label>
+				<div id="as-h20-widget" class="contadores"></div>
+				<label class="contor">Hasta 20 años</label>
 			</div>
 			<div class="borde">
-				<div id="as-e10a19-widget" class="contadores"></div>
-				<label class="contor">10 a 19 años</label>
+				<div id="as-e21a50-widget" class="contadores"></div>
+				<label class="contor">20 a 50 años</label>
 			</div>
 			<div class="borde">
-				<div id="as-e20a29-widget" class="contadores"></div>
-				<label class="contor">20 a 29 años</label>
+				<div id="as-e51a80-widget" class="contadores"></div>
+				<label class="contor">51 a 80 años</label>
 			</div>
 			<div class="borde">
-				<div id="as-e30a39-widget" class="contadores"></div>
-				<label class="contor">30 a 39 años</label>
-			</div>
-			<div class="borde">
-				<div id="as-e40a49-widget" class="contadores"></div>
-				<label class="contor">40 a 49 años</label>
-			</div>
-			<div class="borde">
-				<div id="as-e50a59-widget" class="contadores"></div>
-				<label class="contor">50 a 59 años</label>
-			</div>
-			<div class="borde">
-				<div id="as-e60a69-widget" class="contadores"></div>
-				<label class="contor">60 a 69 años</label>
-			</div>
-			<div class="borde">
-				<div id="as-e70a79-widget" class="contadores"></div>
-				<label class="contor">70 a 79 años</label>
-			</div>
-			<div class="borde">
-				<div id="as-e80a89-widget" class="contadores"></div>
-				<label class="contor">80 a 89 años</label>
-			</div>
-			<div class="borde">
-				<div id="as-e90-widget" class="contadores"></div>
-				<label class="contor">Mas de 90 años</label>
+				<div id="as-mas80-widget" class="contadores"></div>
+				<label class="contor">81 o más años</label>
 			</div>
         </div>
       </div>
@@ -299,7 +289,6 @@
 					@v_features: viewportFeatures($residencia_departamento_nombre)
 					@partido: $residencia_departamento_nombre
 					@histogram: viewportHistogram($edad_prom, 10)
-					//@total: $total
 					@confirma: $confirmados
 					@sospecho: $sospechosos
 					@confmasc: $cmasculino
@@ -308,9 +297,7 @@
 					@fallfeme: $ffemenino
 					@intermascu: $imasculino
 					@interfeme: $ifemenino
-					//@SumTotal: globalSum($total)
 					@SumConfir: globalSum($confirmados)
-					//@SumSospe: globalSum($sospechosos)
 					@SumConfMas: globalSum($cmasculino)
 					@SumConfFem: globalSum($cfemenino)
 					@SumFalMas: globalSum($fmasculino)
@@ -319,16 +306,10 @@
 					@SumIntFem: globalSum($ifemenino)
 					@fallePopUp: $fmasculino + $ffemenino
 					@interPopUp: $imasculino + $ifemenino
-					@Sume9: globalSum($e0a9)
-					@Sume10a19: globalSum($e10a19)
-					@Sum20a29: globalSum($e20a29)
-					@Sum30a39: globalSum($e30a39)
-					@Sum40a49: globalSum($e40a49)
-					@Sum50a59: globalSum($e50a59)
-					@Sum60a69: globalSum($e60a69)
-					@Sum70a79: globalSum($e70a79)
-					@Sum80a89: globalSum($e80a99)
-					@Sum90a: globalSum($e90)
+					@Sumh20: globalSum($h20)
+					@Sume21a50: globalSum($e21a50)
+					@Sume51a80: globalSum($e51a80)
+					@Summ80: globalSum($m80)
 				`);
 				this.layPoint = new carto.Layer('layPoint', sourceLimites, points);
 				layPoint.addTo(map);
@@ -344,16 +325,10 @@
 					document.getElementById('as-fallefeme-widget').innerText = `${points.variables.SumFalFem.value}`;
 					document.getElementById('as-intermascu-widget').innerText = `${points.variables.SumIntMas.value}`;
 					document.getElementById('as-interfeme-widget').innerText = `${points.variables.SumIntFem.value}`;
-					document.getElementById('as-e0a9-widget').innerText = `${points.variables.Sume9.value}`;
-					document.getElementById('as-e10a19-widget').innerText = `${points.variables.Sume10a19.value}`;
-					document.getElementById('as-e20a29-widget').innerText = `${points.variables.Sum20a29.value}`;
-					document.getElementById('as-e30a39-widget').innerText = `${points.variables.Sum30a39.value}`;
-					document.getElementById('as-e40a49-widget').innerText = `${points.variables.Sum40a49.value}`;
-					document.getElementById('as-e50a59-widget').innerText = `${points.variables.Sum50a59.value}`;
-					document.getElementById('as-e60a69-widget').innerText = `${points.variables.Sum60a69.value}`;
-					document.getElementById('as-e70a79-widget').innerText = `${points.variables.Sum70a79.value}`;
-					document.getElementById('as-e80a89-widget').innerText = `${points.variables.Sum80a89.value}`;
-					document.getElementById('as-e90-widget').innerText = `${points.variables.Sum90a.value}`;
+					document.getElementById('as-h20-widget').innerText = `${points.variables.Sumh20.value}`;
+					document.getElementById('as-e21a50-widget').innerText = `${points.variables.Sume21a50.value}`;
+					document.getElementById('as-e51a80-widget').innerText = `${points.variables.Sume51a80.value}`;
+					document.getElementById('as-mas80-widget').innerText = `${points.variables.Summ80.value}`;
 				});
 
 			layPoint.on('loaded', drawHistogram);
@@ -497,6 +472,28 @@
 				`);
 				const barriospop = new carto.Layer('barriospop', sourceBarrios, barrios);
 				barriospop.addTo(map);
+
+				barriospop.on('loaded', () => {
+
+			// Request data for legend from the layer viz color
+			const colorLegend = barriospop.viz.color.getLegendData();
+			let colorLegendList = '';
+			// Create list elements for legend
+			colorLegend.data.forEach((legend, index) => {
+				const color = legend.value;
+				const rgba = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
+
+				// Style for legend items based on geometry type
+				colorLegendList +=
+					`<li>
+					<span class="polygon-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
+					<span>${legend.key}</span>
+					</li>\n`;
+			});
+			// Place list items in the content section of the title/legend box
+			document.getElementById('barriospop').innerHTML = colorLegendList;
+			});
+
 			});
 			
  			//Hacinamiento crítico
