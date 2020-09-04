@@ -171,19 +171,7 @@
 			<label class="contor">Tipo de barrio</label>
 		</footer>
     </div>
-	<div class="box">
-        <header>
-            <h2>Edad promedio</h2>
-        </header>
-        <section>
-          <as-histogram-widget />
-        </section>
-        <footer class="js-footer">
-			<label class="contor">Promedios por partido</label>
-		</footer>
-    </div>
 	</aside>
-
 
     <aside class="as-sidebar as-sidebar--right">
       <div class="as-container">
@@ -267,7 +255,6 @@
 	map.setMinZoom(7.4);
     const nav = new mapboxgl.NavigationControl();
     map.addControl(nav, 'top-left');
-    map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
 
         //** CARTO VL functionality begins here **//
 		const s = carto.expressions;
@@ -288,7 +275,6 @@
 					strokeColor: rgba(17, 141, 255, 0.7)
 					@v_features: viewportFeatures($residencia_departamento_nombre)
 					@partido: $residencia_departamento_nombre
-					@histogram: viewportHistogram($edad_prom, 10)
 					@confirma: $confirmados
 					@sospecho: $sospechosos
 					@confmasc: $cmasculino
@@ -316,9 +302,7 @@
 				
 				layPoint.on('loaded',  () => {
 					// Update widgets
-					//document.getElementById('as-total-widget').innerText = `${points.variables.SumTotal.value}`;
 					document.getElementById('as-confirmados-widget').innerText = `${points.variables.SumConfir.value}`;
-					//document.getElementById('as-sospechosos-widget').innerText = `${points.variables.SumSospe.value}`;
 					document.getElementById('as-confmascu-widget').innerText = `${points.variables.SumConfMas.value}`;
 					document.getElementById('as-conffeme-widget').innerText = `${points.variables.SumConfFem.value}`;
 					document.getElementById('as-fallemascu-widget').innerText = `${points.variables.SumFalMas.value}`;
@@ -330,20 +314,6 @@
 					document.getElementById('as-e51a80-widget').innerText = `${points.variables.Sume51a80.value}`;
 					document.getElementById('as-mas80-widget').innerText = `${points.variables.Summ80.value}`;
 				});
-
-			layPoint.on('loaded', drawHistogram);
-			
-			function drawHistogram() {
-				var histogramWidget = document.querySelector('as-histogram-widget');
-				const histogram = layPoint.viz.variables.histogram.value;
-				histogramWidget.data = histogram.map(entry => {
-					return {
-						start: entry.x[0],
-						end: entry.x[1],
-						value: entry.y
-					}
-				});
-			}
 
         // Define interactivity
         const interactivity = new carto.Interactivity(layPoint);
@@ -474,25 +444,24 @@
 				barriospop.addTo(map);
 
 				barriospop.on('loaded', () => {
+					// Request data for legend from the layer viz color
+					const colorLegend = barriospop.viz.color.getLegendData();
+					let colorLegendList = '';
+					// Create list elements for legend
+					colorLegend.data.forEach((legend, index) => {
+						const color = legend.value;
+						const rgba = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
 
-			// Request data for legend from the layer viz color
-			const colorLegend = barriospop.viz.color.getLegendData();
-			let colorLegendList = '';
-			// Create list elements for legend
-			colorLegend.data.forEach((legend, index) => {
-				const color = legend.value;
-				const rgba = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
-
-				// Style for legend items based on geometry type
-				colorLegendList +=
-					`<li>
-					<span class="polygon-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
-					<span>${legend.key}</span>
-					</li>\n`;
-			});
-			// Place list items in the content section of the title/legend box
-			document.getElementById('barriospop').innerHTML = colorLegendList;
-			});
+						// Style for legend items based on geometry type
+						colorLegendList +=
+							`<li>
+							<span class="polygon-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
+							<span>${legend.key}</span>
+							</li>\n`;
+					});
+					// Place list items in the content section of the title/legend box
+					document.getElementById('barriospop').innerHTML = colorLegendList;
+				});
 
 			});
 			
@@ -510,26 +479,25 @@
 				this.HacinaCrit = new carto.Layer('HacinaCrit', sourceHacin, hacina);
 				HacinaCrit.addTo(map, 'layPoint');
 				
-			HacinaCrit.on('loaded', () => {
+				HacinaCrit.on('loaded', () => {
+					// Request data for legend from the layer viz color
+					const colorLegend = HacinaCrit.viz.color.getLegendData();
+					let colorLegendList = '';
+					// Create list elements for legend
+					colorLegend.data.forEach((legend, index) => {
+						const color = legend.value;
+						const rgba = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
 
-            // Request data for legend from the layer viz color
-            const colorLegend = HacinaCrit.viz.color.getLegendData();
-            let colorLegendList = '';
-            // Create list elements for legend
-            colorLegend.data.forEach((legend, index) => {
-                const color = legend.value;
-                const rgba = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
-
-                // Style for legend items based on geometry type
-                colorLegendList +=
-                    `<li>
-                       <span class="polygon-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
-                       <span>${legend.key}</span>
-                    </li>\n`;
-            });
-            // Place list items in the content section of the title/legend box
-            document.getElementById('content').innerHTML = colorLegendList;
-        });
+						// Style for legend items based on geometry type
+						colorLegendList +=
+							`<li>
+							<span class="polygon-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
+							<span>${legend.key}</span>
+							</li>\n`;
+					});
+					// Place list items in the content section of the title/legend box
+					document.getElementById('content').innerHTML = colorLegendList;
+				});
 		
 			});
   </script>
