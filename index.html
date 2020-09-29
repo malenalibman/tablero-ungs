@@ -226,7 +226,7 @@
         </div>
       </div>
 	  <div class="as-box">
-		<label class="actualiza">Fecha última actualización: 22/09/2020</label>
+		<label class="actualiza">Fecha última actualización: 29/09/2020</label>
 	  </div>
     </aside>
 
@@ -268,6 +268,7 @@
 		
 			//Partidos y CABA como puntos
 			fetch('./capas/covid19_amba_points.geojson')
+			//fetch('http://ideconurbano.ungs.edu.ar/geoserver/covid-19/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=covid-19%3Acovid19_amba&outputFormat=application%2Fjson')
 			.then(response => response.json())
 			.then(function(data){
 				// Define layer
@@ -377,8 +378,8 @@
 					@v_features: viewportFeatures($nam)
 					@partido: $nam
 				`);
-				const layLimites = new carto.Layer('layLimites', sourceLimites, limites);
-				layLimites.addTo(map);
+				this.layLimites = new carto.Layer('layLimites', sourceLimites, limites);
+				layLimites.addTo(map, 'barriospop');
 				
 				// Create labeling layer centroids
 				layLimites.on('loaded', () => {
@@ -443,8 +444,8 @@
 					strokeColor: rgba(150,150,150,0.8)
 					strokeWidth: 0.5
 				`);
-				const barriospop = new carto.Layer('barriospop', sourceBarrios, barrios);
-				barriospop.addTo(map);
+				this.barriospop = new carto.Layer('barriospop', sourceBarrios, barrios);
+				barriospop.addTo(map, 'layPoint');
 
 				barriospop.on('loaded', () => {
 					// Request data for legend from the layer viz color
@@ -475,12 +476,12 @@
 				
 				const sourceHacin = new carto.source.GeoJSON(data);
 				const hacina = new carto.Viz(`
-					color: opacity(ramp(globalQuantiles($haci, 5), [#fef6b5, #ffd08e, #ffa679, #f67b77, #e15383]), 0.5)
+					color: opacity(ramp(buckets($haci, [20, 40, 60]), [#ffd08e, #ffa679, #f67b77, #e15383]), 0.7)
 					strokeColor: rgba(150,150,150,0.5)
 					strokeWidth: 0.1
 				`);
 				this.HacinaCrit = new carto.Layer('HacinaCrit', sourceHacin, hacina);
-				HacinaCrit.addTo(map, 'layPoint');
+				HacinaCrit.addTo(map, 'layLimites');
 				
 				HacinaCrit.on('loaded', () => {
 					// Request data for legend from the layer viz color
@@ -490,12 +491,21 @@
 					colorLegend.data.forEach((legend, index) => {
 						const color = legend.value;
 						const rgba = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
+						
+						const keyMin = legend.key[0].toFixed(0);
+						const keyMax = legend.key[1].toFixed(0);
+						let bucket = `${keyMin} - ${keyMax}`;
+							if (keyMin==='-Infinity'){
+									bucket = `0 - ${keyMax}`;
+								}else if (keyMax==='Infinity'){
+									bucket = `> ${keyMin}`;
+								}
 
 						// Style for legend items based on geometry type
 						colorLegendList +=
 							`<li>
 							<span class="polygon-mark" style="background-color:${rgba}; border: 1px solid black;"></span>
-							<span>${legend.key}</span>
+							<span>${bucket}</span>
 							</li>\n`;
 					});
 					// Place list items in the content section of the title/legend box
