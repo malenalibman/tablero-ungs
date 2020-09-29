@@ -289,8 +289,8 @@
         });
 		
 			//Partidos y CABA como puntos
-			//fetch('./capas/covid19_amba_points.geojson')
-			fetch('http://ideconurbano.ungs.edu.ar/geoserver/covid-19/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=covid-19%3Acovid19_amba&outputFormat=application%2Fjson')
+			fetch('./capas/covid19_amba_points.geojson')
+			//fetch('http://ideconurbano.ungs.edu.ar/geoserver/covid-19/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=covid-19%3Acovid19_amba&outputFormat=application%2Fjson')
 			.then(response => response.json())
 			.then(function(data){
 				// Define layer
